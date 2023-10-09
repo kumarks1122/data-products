@@ -14,25 +14,10 @@ storage.key.config="{{ dp_storage_key_config }}"
 storage.secret.config="{{ dp_storage_secret_config }}"
 reports.storage.key.config="{{ dp_reports_storage_key_config }}"
 reports.storage.secret.config="{{ dp_reports_storage_secret_config }}"
-{% if dp_object_store_type == "azure" %}
-cloud_storage_type="azure"
-{% elif (dp_object_store_type == "cephs3" or dp_object_store_type == "s3" or dp_object_store_type == "oci") %}
+cloud_storage_type="{{dp_object_store_type}}"
 
 cloud_storage_endpoint="{{ s3_storage_endpoint | regex_replace('^[a-z]+://(.*)$', '\1') }}"
 cloud_storage_endpoint_with_protocol="{{ s3_storage_endpoint }}"
-
-{% if cloud_service_provider == "oci" %}
-cloud_storage_type="oci"
-storage.endpoint.config="{{ dp_storage_endpoint_config }}"
-oci_storage_key="{{ s3_storage_key }}"
-oci_storage_secret="{{ s3_storage_secret }}"
-{% else %}
-cloud_storage_type="s3"
-aws_storage_key="{{ s3_storage_key }}"
-aws_storage_secret="{{ s3_storage_secret }}"
-{% endif %}
-
-{% endif %}
 
 lp.contentmodel.versionkey="jd5ECm/o0BXwQCe8PfZY1NoUkB9HN41QjA80p22MKyRIcP5RW4qHw8sZztCzv87M"
 
@@ -71,15 +56,6 @@ default.channel.id="in.ekstep"
 default.creation.app.id="no_value"
 
 
-# Media Service Type
-media_service_type = "azure"
-
-azure_tenant="{{ media_service_azure_tenant }}"
-azure_subscription_id="{{ media_service_azure_subscription_id }}"
-azure_account_name="{{ media_service_azure_account_name }}"
-azure_resource_group_name="{{ media_service_azure_resource_group_name }}"
-azure_token_client_key="{{ media_service_azure_token_client_key }}" 
-azure_token_client_secret="{{ media_service_azure_token_client_secret }}"
 elasticsearch.service.endpoint="http://{{groups['composite-search-cluster'][0]}}:9200"
 elasticsearch.index.compositesearch.name="{{ es_search_index }}"
 
@@ -88,42 +64,10 @@ org.search.api.key="{{ searchServiceAuthorizationToken }}"
 hierarchy.search.api.url="{{ hierarchySearchServiceUrl }}"
 hierarchy.search.api.path="{{ hierarchySearchServicEndpoint }}"
 
-# Azure Media Service Config
-azure {
-  location = "centralindia"
-  tenant = "tenant name"
-  subscription_id = "subscription id"
-
-  api {
-    endpoint="Media Service API End Point"
-    version = "2018-07-01"
-  }
-
-  account_name = "account name"
-  resource_group_name = "Resource Group Name"
-
-  transform {
-    default = "media_transform_default"
-    hls = "media_transform_hls"
-  }
-
-  stream {
-    base_url = "{{ stream_base_url }}"
-    endpoint_name = "default"
-    protocol = "Hls"
-    policy_name = "Predefined_ClearStreamingOnly"
-  }
-
-  token {
-    client_key = "client key"
-    client_secret = "client secret"
-  }
-}
-
 ## Reports - Global config
 cloud.container.reports="{{reports_container}}"
 
-# course metrics container in azure
+# course metrics container
 course.metrics.cassandra.sunbirdKeyspace="sunbird"
 course.metrics.cassandra.sunbirdCoursesKeyspace="sunbird_courses"
 course.metrics.cassandra.sunbirdHierarchyStore="{{ cassandra_hierarchy_store_keyspace }}"
@@ -134,7 +78,6 @@ es.port="9200"
 es.composite.host="{{groups['composite-search-cluster'][0]}}"
 
 # State admin user reports
-# Uses azure only - course.metrics.cloud.provider
 admin.metrics.cloud.objectKey=""
 admin.metrics.temp.dir="/mount/data/analytics/admin-user-reports"
 
